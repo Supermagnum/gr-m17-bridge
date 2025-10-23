@@ -1,0 +1,246 @@
+blocks:
+- name: options
+  id: options
+  parameters:
+    author: M17 Bridge Project
+    category: '[M17 Bridge]/Examples'
+    cmake_opt: ''
+    comment: M17 to AX.25 bridge example
+    copyright: Copyright 2024 M17 Bridge Project
+    description: Example flowgraph showing M17 to AX.25 protocol conversion
+    export_cpp: 'False'
+    export_lang: py
+    generate_options: qt_gui
+    hier_block_src_path: '.:'
+    id: options
+    max_nouts: '0'
+    output_language: python
+    placement: (0,0)
+    qt_qss_theme: ''
+    realtime_scheduling: ''
+    run: 'True'
+    run_command: '{python} -u {filename}'
+    run_options: prompt
+    sizing_mode: fixed
+    thread_safe_setters: ''
+    title: M17 AX.25 Bridge
+    window_size: ''
+  states:
+    bus_sink: false
+    bus_source: false
+    coordinate: [8, 8]
+    rotation: 0
+    state: disabled
+
+- name: variable
+  id: variable
+  parameters:
+    comment: ''
+    value: '"N0CALL"'
+    type: string
+  states:
+    coordinate: [8, 8]
+    rotation: 0
+    state: enabled
+
+- name: variable
+  id: variable_0
+  parameters:
+    comment: ''
+    value: '"APRS"'
+    type: string
+  states:
+    coordinate: [8, 8]
+    rotation: 0
+    state: enabled
+
+- name: variable
+  id: variable_1
+  parameters:
+    comment: ''
+    value: '48000'
+    type: int
+  states:
+    coordinate: [8, 8]
+    rotation: 0
+    state: enabled
+
+- name: variable
+  id: variable_2
+  parameters:
+    comment: ''
+    value: '9600'
+    type: int
+  states:
+    coordinate: [8, 8]
+    rotation: 0
+    state: enabled
+
+- name: analog_sig_source_x
+  id: analog_sig_source_x
+  parameters:
+    affinity: ''
+    alias: ''
+    amp: '1'
+    comment: ''
+    freq: '1000'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    offset: '0'
+    phase: '0'
+    samp_rate: samp_rate
+    type: complex
+    waveform: analog.GR_COS_WAVE
+  states:
+    coordinate: [8, 8]
+    rotation: 0
+    state: enabled
+
+- name: blocks_throttle
+  id: blocks_throttle
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    ignoretag: 'True'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samples_per_second: samp_rate
+    type: complex
+  states:
+    coordinate: [8, 8]
+    rotation: 0
+    state: enabled
+
+- name: blocks_uchar_to_float
+  id: blocks_uchar_to_float
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    scale: '1'
+    vlen: '1'
+  states:
+    coordinate: [8, 8]
+    rotation: 0
+    state: enabled
+
+- name: blocks_float_to_uchar
+  id: blocks_float_to_uchar
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    scale: '1'
+    vlen: '1'
+  states:
+    coordinate: [8, 8]
+    rotation: 0
+    state: enabled
+
+- name: m17_bridge_m17_to_ax25
+  id: m17_bridge_m17_to_ax25
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    callsign: m17_callsign
+    destination: ax25_destination
+    enable_encryption: 'False'
+    enable_fec: 'False'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    coordinate: [8, 8]
+    rotation: 0
+    state: enabled
+
+- name: m17_bridge_ax25_to_m17
+  id: m17_bridge_ax25_to_m17
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    callsign: ax25_callsign
+    destination: m17_destination
+    enable_encryption: 'False'
+    enable_fec: 'False'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+  states:
+    coordinate: [8, 8]
+    rotation: 0
+    state: enabled
+
+- name: qtgui_time_sink_x
+  id: qtgui_time_sink_x
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha: '1.0'
+    autoscale: 'False'
+    comment: ''
+    grid: 'True'
+    label1: M17 Input
+    label2: ''
+    label3: ''
+    label4: ''
+    label5: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    name: 'M17 Input'
+    nconnections: '1'
+    type: complex
+    update_time: '0.10'
+    ylabel: Amplitude
+    ymax: '1'
+    ymin: '-1'
+    yunit: ''
+  states:
+    coordinate: [8, 8]
+    rotation: 0
+    state: enabled
+
+- name: qtgui_time_sink_x_0
+  id: qtgui_time_sink_x_0
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha: '1.0'
+    autoscale: 'False'
+    comment: ''
+    grid: 'True'
+    label1: AX.25 Output
+    label2: ''
+    label3: ''
+    label4: ''
+    label5: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    name: 'AX.25 Output'
+    nconnections: '1'
+    type: complex
+    update_time: '0.10'
+    ylabel: Amplitude
+    ymax: '1'
+    ymin: '-1'
+    yunit: ''
+  states:
+    coordinate: [8, 8]
+    rotation: 0
+    state: enabled
+
+connections:
+- [analog_sig_source_x, 0, blocks_throttle, 0]
+- [blocks_throttle, 0, blocks_float_to_uchar, 0]
+- [blocks_float_to_uchar, 0, m17_bridge_m17_to_ax25, 0]
+- [m17_bridge_m17_to_ax25, 0, blocks_uchar_to_float, 0]
+- [blocks_uchar_to_float, 0, qtgui_time_sink_x_0, 0]
+- [blocks_throttle, 0, qtgui_time_sink_x, 0]
+
+metadata:
+  file_format: 1

@@ -1,0 +1,60 @@
+id: m17_bridge_protocol_converter
+label: Protocol Converter
+category: '[M17 Bridge]/Protocol Converters'
+flags: [python, cpp]
+dtype: uint8
+parameters:
+- id: m17_callsign
+  label: M17 Callsign
+  dtype: string
+  default: '"N0CALL"'
+- id: m17_destination
+  label: M17 Destination
+  dtype: string
+  default: '"APRS"'
+- id: ax25_callsign
+  label: AX.25 Callsign
+  dtype: string
+  default: '"N0CALL"'
+- id: ax25_destination
+  label: AX.25 Destination
+  dtype: string
+  default: '"APRS"'
+- id: enable_fx25
+  label: Enable FX.25 FEC
+  dtype: bool
+  default: 'False'
+- id: enable_il2p
+  label: Enable IL2P
+  dtype: bool
+  default: 'False'
+inputs:
+- domain: stream
+  dtype: uint8
+  vlen: 1
+  label: M17 Input
+- domain: stream
+  dtype: uint8
+  vlen: 1
+  label: AX.25 Input
+outputs:
+- domain: stream
+  dtype: uint8
+  vlen: 1
+  label: M17 Output
+- domain: stream
+  dtype: uint8
+  vlen: 1
+  label: AX.25 Output
+templates:
+  imports: |-
+    from gnuradio import m17_bridge
+  make: m17_bridge.protocol_converter(${m17_callsign}, ${m17_destination}, ${ax25_callsign}, ${ax25_destination}, ${enable_fx25}, ${enable_il2p})
+  callbacks:
+  - set_m17_callsign(${m17_callsign})
+  - set_m17_destination(${m17_destination})
+  - set_ax25_callsign(${ax25_callsign})
+  - set_ax25_destination(${ax25_destination})
+  - set_fx25_enabled(${enable_fx25})
+  - set_il2p_enabled(${enable_il2p})
+file_format: 1

@@ -1,0 +1,35 @@
+id: m17_bridge_ax25_to_m17
+label: AX.25 to M17
+category: '[M17 Bridge]/Protocol Converters'
+flags: [python, cpp]
+dtype: uint8
+parameters:
+- id: callsign
+  label: AX.25 Callsign
+  dtype: string
+  default: '"N0CALL"'
+- id: destination
+  label: M17 Destination
+  dtype: string
+  default: '"APRS"'
+- id: enable_fec
+  label: Enable FEC
+  dtype: bool
+  default: 'False'
+inputs:
+- domain: stream
+  dtype: uint8
+  vlen: 1
+outputs:
+- domain: stream
+  dtype: uint8
+  vlen: 1
+templates:
+  imports: |-
+    from gnuradio import m17_bridge
+  make: m17_bridge.ax25_to_m17(${callsign}, ${destination}, ${enable_fec})
+  callbacks:
+  - set_destination(${destination})
+  - set_callsign(${callsign})
+  - set_fec_enabled(${enable_fec})
+file_format: 1
