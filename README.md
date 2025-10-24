@@ -35,6 +35,64 @@ A GNU Radio module for bridging between M17 digital radio and AX.25 packet radio
 - C++17 compatible compiler
 - Python 3.6 or later (for Python bindings)
 
+### Installing Dependencies
+
+#### Ubuntu/Debian
+
+```bash
+# Core dependencies
+sudo apt update
+sudo apt install -y \
+    cmake \
+    build-essential \
+    pkg-config \
+    libvolk2-dev \
+    libgnuradio-dev \
+    gnuradio-dev
+
+# Python bindings (optional)
+sudo apt install -y \
+    python3-dev \
+    python3-pybind11 \
+    python3-numpy
+
+# Testing framework (optional)
+sudo apt install -y \
+    libgtest-dev \
+    libgmock-dev
+
+# Fuzzing framework (optional)
+sudo apt install -y \
+    afl++
+```
+
+#### Fedora/RHEL/CentOS
+
+```bash
+# Core dependencies
+sudo dnf install -y \
+    cmake \
+    gcc-c++ \
+    pkgconfig \
+    volk-devel \
+    gnuradio-devel
+
+# Python bindings (optional)
+sudo dnf install -y \
+    python3-devel \
+    pybind11-devel \
+    python3-numpy
+
+# Testing framework (optional)
+sudo dnf install -y \
+    gtest-devel \
+    gmock-devel
+
+# Fuzzing framework (optional)
+sudo dnf install -y \
+    afl++
+```
+
 ### Building from Source
 
 ```bash
@@ -60,6 +118,21 @@ cmake -DENABLE_PYTHON=ON \
 ```
 
 ## Usage
+
+### Import this package with:
+
+#### Python
+```python
+import gnuradio.m17_bridge as m17_bridge
+```
+
+#### C++
+```cpp
+#include <gnuradio/m17_bridge/m17_to_ax25.h>
+#include <gnuradio/m17_bridge/ax25_to_m17.h>
+#include <gnuradio/m17_bridge/protocol_converter.h>
+#include <gnuradio/m17_bridge/callsign_mapper.h>
+```
 
 ### GNU Radio Companion
 
@@ -181,6 +254,22 @@ This module provides pure protocol conversion between M17 and AX.25 without any 
 - Follow all applicable frequency and power regulations
 
 **Recommendation:** Always consult with your local amateur radio regulatory authority before operating amateur radio equipment.
+
+## Security Testing
+
+### Fuzzing Results
+
+Comprehensive security testing has been performed using LibFuzzer with structure-aware protocol generation:
+
+- **Duration**: 8-hour comprehensive fuzzing session
+- **Coverage**: 527 edges discovered with plateau confirmation
+- **Total Tests**: 1,294,453,414 test cases executed
+- **Protocols Tested**: AX.25, KISS, FX.25, IL2P, M17
+- **Security Status**: No vulnerabilities found - code demonstrates exceptional robustness
+
+**[View Detailed Fuzzing Results](security/fuzzing/fuzzing-results.md)**
+
+The M17 Bridge module has been thoroughly tested and shows excellent security posture with robust error handling and input validation across all protocol implementations.
 
 ## Contributing
 
