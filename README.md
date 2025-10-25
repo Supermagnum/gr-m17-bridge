@@ -271,16 +271,10 @@ Security testing has been performed using LibFuzzer with structure-aware protoco
 
 The M17 Bridge module has been thoroughly tested across all protocol implementations.
 
-## Contributing
 
-This project is part of the M17 Foundation. For contribution guidelines and development information, see the project documentation.
 
 ## License
 
 GPL-3.0-or-later
 
-## Acknowledgments
 
-- M17 Project for the original M17 protocol implementation
-- GNU Radio community for the excellent framework
-- Amateur radio community for testing and feedback
