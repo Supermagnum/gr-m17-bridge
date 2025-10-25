@@ -775,9 +775,8 @@ int m17_ax25_bridge_parse_ax25_frame(m17_ax25_bridge_t* bridge, const uint8_t* d
     // Extract addresses (minimum 2 addresses + control)
     char src_callsign[7] = {0};
     char dst_callsign[7] = {0};
-    // Note: SSID extraction would be implemented here if needed
-    // uint8_t src_ssid = 0;
-    // uint8_t dst_ssid = 0;
+    uint8_t src_ssid = 0;
+    uint8_t dst_ssid = 0;
     
     // Parse destination address (bytes 1-7)
     for (int i = 0; i < 6; i++) {
