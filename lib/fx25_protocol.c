@@ -14,14 +14,15 @@
 #include <string.h>
 #include <assert.h>
 
-// Reed-Solomon polynomial tables
-static unsigned char alpha_to[256];
-static unsigned char index_of[256];
-static unsigned char genpoly[32];
+// Reed-Solomon polynomial tables - removed unused static variables
+// Note: These would be used in a full implementation
+// static unsigned char alpha_to[256];
+// static unsigned char index_of[256];
+// static unsigned char genpoly[32];
 
 // Initialize Reed-Solomon codec
 struct fx25_rs* fx25_rs_init(int symsize, int genpoly_val, int fcs, int prim, int nroots) {
-    struct fx25_rs* rs = malloc(sizeof(struct fx25_rs));
+    struct fx25_rs* rs = (struct fx25_rs*)malloc(sizeof(struct fx25_rs));
     if (!rs) return NULL;
     
     rs->mm = symsize;
@@ -31,9 +32,9 @@ struct fx25_rs* fx25_rs_init(int symsize, int genpoly_val, int fcs, int prim, in
     rs->nroots = nroots;
     
     // Allocate lookup tables
-    rs->alpha_to = malloc((rs->nn + 1) * sizeof(unsigned char));
-    rs->index_of = malloc((rs->nn + 1) * sizeof(unsigned char));
-    rs->genpoly = malloc((nroots + 1) * sizeof(unsigned char));
+    rs->alpha_to = (unsigned char*)malloc((rs->nn + 1) * sizeof(unsigned char));
+    rs->index_of = (unsigned char*)malloc((rs->nn + 1) * sizeof(unsigned char));
+    rs->genpoly = (unsigned char*)malloc((nroots + 1) * sizeof(unsigned char));
     
     if (!rs->alpha_to || !rs->index_of || !rs->genpoly) {
         fx25_rs_free(rs);
@@ -41,10 +42,11 @@ struct fx25_rs* fx25_rs_init(int symsize, int genpoly_val, int fcs, int prim, in
     }
     
     // Generate Galois field tables
-    int i, j, sr, gf;
+    int i, j, sr;
+    // Note: gf variable removed as it was unused
     
     // Initialize alpha_to and index_of tables
-    for (i = 0; i < rs->nn + 1; i++) {
+    for (i = 0; i < (int)(rs->nn + 1); i++) {
         rs->alpha_to[i] = 0;
         rs->index_of[i] = 0;
     }
@@ -52,7 +54,7 @@ struct fx25_rs* fx25_rs_init(int symsize, int genpoly_val, int fcs, int prim, in
     // Generate Galois field
     rs->alpha_to[rs->mm] = 0;
     sr = 1;
-    for (i = 0; i < rs->nn; i++) {
+    for (i = 0; i < (int)rs->nn; i++) {
         rs->alpha_to[i] = sr;
         rs->index_of[sr] = i;
         sr <<= 1;
@@ -110,12 +112,12 @@ int fx25_rs_encode(struct fx25_rs* rs, uint8_t* data, int data_len, uint8_t* par
     for (i = 0; i < data_len; i++) {
         feedback = rs->index_of[data[i] ^ parity[0]];
         if (feedback != rs->nn) {
-            for (j = 0; j < rs->nroots - 1; j++) {
+            for (j = 0; j < (int)(rs->nroots - 1); j++) {
                 parity[j] = parity[j + 1] ^ rs->alpha_to[(feedback + rs->genpoly[rs->nroots - 1 - j]) % rs->nn];
             }
             parity[rs->nroots - 1] = rs->alpha_to[(feedback + rs->genpoly[0]) % rs->nn];
         } else {
-            for (j = 0; j < rs->nroots; j++) {
+            for (j = 0; j < (int)rs->nroots; j++) {
                 parity[j] = parity[j + 1];
             }
             parity[rs->nroots - 1] = 0;
@@ -127,6 +129,8 @@ int fx25_rs_encode(struct fx25_rs* rs, uint8_t* data, int data_len, uint8_t* par
 
 // Reed-Solomon decode
 int fx25_rs_decode(struct fx25_rs* rs, uint8_t* data, int data_len, uint8_t* parity, int nroots) {
+    (void)data_len;  // Suppress unused parameter warning
+    (void)nroots;    // Suppress unused parameter warning
     if (!rs || !data || !parity) return -1;
     
     // Simplified decode - in practice, this would be more complex

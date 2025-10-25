@@ -12,10 +12,25 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <stddef.h>
-#include "../tnc/kiss_protocol.h"
-#include "../tnc/ax25_protocol.h"
-#include "../tnc/fx25_protocol.h"
-#include "../tnc/il2p_protocol.h"
+#include <stdio.h>
+#include "kiss_protocol.h"
+#include "ax25_protocol.h"
+#include "fx25_protocol.h"
+#include "il2p_protocol.h"
+
+// Debug logging macros
+#ifdef DEBUG
+#define M17_DEBUG_PRINT(bridge, fmt, ...) do { \
+    if (bridge && bridge->debug_enabled) { \
+        printf("[M17-Bridge] " fmt, ##__VA_ARGS__); \
+    } \
+} while(0)
+#else
+#define M17_DEBUG_PRINT(bridge, fmt, ...) do { } while(0)
+#endif
+
+#define M17_LOG_ERROR(fmt, ...) fprintf(stderr, "[M17-Bridge-ERROR] " fmt, ##__VA_ARGS__)
+#define M17_LOG_INFO(fmt, ...) printf("[M17-Bridge-INFO] " fmt, ##__VA_ARGS__)
 
 // M17 Type Definitions
 typedef struct {

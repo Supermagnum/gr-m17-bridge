@@ -641,7 +641,7 @@ int m17_ax25_bridge_process_m17_lsf(m17_ax25_bridge_t* bridge, const uint8_t* da
     bridge->state.ax25_active = false;
     
     // Log M17 LSF reception
-    printf("M17 LSF: %s -> %s\n", src_callsign, dst_callsign);
+    M17_DEBUG_PRINT(bridge, "M17 LSF: %s -> %s\n", src_callsign, dst_callsign);
     
     return 0;
 }
@@ -654,7 +654,7 @@ int m17_ax25_bridge_process_m17_stream(m17_ax25_bridge_t* bridge, const uint8_t*
     
     // Extract audio data from stream frame
     // M17 stream frames contain encoded audio data
-    printf("M17 Stream Frame: %d bytes\n", length);
+    M17_DEBUG_PRINT(bridge, "M17 Stream Frame: %d bytes\n", length);
     
     // Implement audio decoding
     if (bridge->state.current_protocol == PROTOCOL_M17) {
@@ -665,13 +665,13 @@ int m17_ax25_bridge_process_m17_stream(m17_ax25_bridge_t* bridge, const uint8_t*
             int16_t pcm_samples[160]; // 20ms at 8kHz
             if (m17_audio_to_pcm(&audio_frame, pcm_samples, 160) == 0) {
                 // Output audio samples
-                printf("M17 Audio: %d samples decoded\n", 160);
+                M17_DEBUG_PRINT(bridge, "M17 Audio: %d samples decoded\n", 160);
                 return 0;
             }
         }
     } else if (bridge->state.current_protocol == PROTOCOL_AX25) {
         // AX.25 doesn't typically carry audio, but could carry digitized voice
-        printf("AX.25 Data: %d bytes (no audio)\n", length);
+        M17_DEBUG_PRINT(bridge, "AX.25 Data: %d bytes (no audio)\n", length);
         return 0;
     }
     
@@ -685,7 +685,7 @@ int m17_ax25_bridge_process_m17_packet(m17_ax25_bridge_t* bridge, const uint8_t*
     }
     
     // Extract packet data
-    printf("M17 Packet Frame: %d bytes\n", length);
+    M17_DEBUG_PRINT(bridge, "M17 Packet Frame: %d bytes\n", length);
     
     // Implement packet processing
     m17_packet_frame_t packet_frame;
@@ -700,21 +700,21 @@ int m17_ax25_bridge_process_m17_packet(m17_ax25_bridge_t* bridge, const uint8_t*
             // Validate packet data
             if (m17_validate_packet_data(packet_data, packet_length) == 0) {
                 // Process application layer data
-                printf("M17 Packet: %d bytes of data\n", packet_length);
+                M17_DEBUG_PRINT(bridge, "M17 Packet: %d bytes of data\n", packet_length);
                 
                 // Handle different packet types
                 switch (packet_frame.type) {
                     case M17_PACKET_TYPE_DATA:
-                        printf("Data packet received\n");
+                        M17_DEBUG_PRINT(bridge, "Data packet received\n");
                         break;
                     case M17_PACKET_TYPE_APRS:
-                        printf("APRS packet received\n");
+                        M17_DEBUG_PRINT(bridge, "APRS packet received\n");
                         break;
                     case M17_PACKET_TYPE_TEXT:
-                        printf("Text packet received\n");
+                        M17_DEBUG_PRINT(bridge, "Text packet received\n");
                         break;
                     default:
-                        printf("Unknown packet type: %d\n", packet_frame.type);
+                        M17_DEBUG_PRINT(bridge, "Unknown packet type: %d\n", packet_frame.type);
                         break;
                 }
                 
@@ -732,7 +732,7 @@ int m17_ax25_bridge_process_m17_bert(m17_ax25_bridge_t* bridge, const uint8_t* d
         return -1;
     }
     
-    printf("M17 BERT (Bit Error Rate Test)\n");
+    M17_DEBUG_PRINT(bridge, "M17 BERT (Bit Error Rate Test)\n");
     
     // BERT frames are used for testing - no special processing needed
     return 0;
@@ -775,8 +775,9 @@ int m17_ax25_bridge_parse_ax25_frame(m17_ax25_bridge_t* bridge, const uint8_t* d
     // Extract addresses (minimum 2 addresses + control)
     char src_callsign[7] = {0};
     char dst_callsign[7] = {0};
-    uint8_t src_ssid = 0;
-    uint8_t dst_ssid = 0;
+    // Note: SSID extraction would be implemented here if needed
+    // uint8_t src_ssid = 0;
+    // uint8_t dst_ssid = 0;
     
     // Parse destination address (bytes 1-7)
     for (int i = 0; i < 6; i++) {
@@ -817,7 +818,7 @@ int m17_ax25_bridge_process_ax25_iframe(m17_ax25_bridge_t* bridge, const uint8_t
     uint16_t info_start = 16; // Skip addresses and control
     uint16_t info_length = length - info_start - 2; // Subtract FCS
     
-    printf("AX.25 I-frame: %s -> %s (%d bytes)\n", src_callsign, dst_callsign, info_length);
+    M17_DEBUG_PRINT(bridge, "AX.25 I-frame: %s -> %s (%d bytes)\n", src_callsign, dst_callsign, info_length);
     
     // Update bridge state
     bridge->state.ax25_active = true;
@@ -844,7 +845,7 @@ int m17_ax25_bridge_process_ax25_sframe(m17_ax25_bridge_t* bridge, const uint8_t
         case 0x0C: frame_type = "SREJ"; break;
     }
     
-    printf("AX.25 S-frame (%s): %s -> %s\n", frame_type, src_callsign, dst_callsign);
+    M17_DEBUG_PRINT(bridge, "AX.25 S-frame (%s): %s -> %s\n", frame_type, src_callsign, dst_callsign);
     
     return 0;
 }
@@ -873,7 +874,7 @@ int m17_ax25_bridge_process_m17_tx(m17_ax25_bridge_t* bridge, const uint8_t* dat
         return -1;
     }
     
-    printf("M17 TX: %d bytes transmitted\n", encoded_length);
+    M17_DEBUG_PRINT(bridge, "M17 TX: %d bytes transmitted\n", encoded_length);
     return 0;
 }
 
@@ -907,7 +908,7 @@ int m17_ax25_bridge_process_ax25_tx(m17_ax25_bridge_t* bridge, const uint8_t* da
         return -1;
     }
     
-    printf("AX.25 TX: %d bytes transmitted\n", encoded_length);
+    M17_DEBUG_PRINT(bridge, "AX.25 TX: %d bytes transmitted\n", encoded_length);
     return 0;
 }
 
@@ -1001,7 +1002,7 @@ int m17_ax25_bridge_process_ax25_uframe(m17_ax25_bridge_t* bridge, const uint8_t
         case 0xAF: frame_type = "FRMR"; break;
     }
     
-    printf("AX.25 U-frame (%s): %s -> %s\n", frame_type, src_callsign, dst_callsign);
+    M17_DEBUG_PRINT(bridge, "AX.25 U-frame (%s): %s -> %s\n", frame_type, src_callsign, dst_callsign);
     
     // Check for APRS (UI frame with PID 0xF0)
     if (control == 0x03 && length > 18) {
@@ -1025,7 +1026,7 @@ int m17_ax25_bridge_process_aprs_frame(m17_ax25_bridge_t* bridge, const uint8_t*
     uint16_t aprs_start = 17;
     uint16_t aprs_length = length - aprs_start - 2; // Subtract FCS
     
-    printf("APRS: %s -> %s (%d bytes)\n", src_callsign, dst_callsign, aprs_length);
+    M17_DEBUG_PRINT(bridge, "APRS: %s -> %s (%d bytes)\n", src_callsign, dst_callsign, aprs_length);
     
     // Update bridge state
     bridge->state.current_protocol = PROTOCOL_APRS;
@@ -1387,9 +1388,9 @@ int m17_ax25_bridge_enable_debug(m17_ax25_bridge_t* bridge, bool enable) {
     // Implement debug enable/disable
     bridge->debug_enabled = enable;
     if (enable) {
-        printf("M17-AX.25 Bridge: Debug enabled\n");
+        M17_LOG_INFO("Debug enabled\n");
     } else {
-        printf("M17-AX.25 Bridge: Debug disabled\n");
+        M17_LOG_INFO("Debug disabled\n");
     }
     
     return 0;
@@ -1403,7 +1404,7 @@ int m17_ax25_bridge_set_debug_level(m17_ax25_bridge_t* bridge, int level) {
     
     // Implement debug level setting
     bridge->debug_level = level;
-    printf("M17-AX.25 Bridge: Debug level set to %d\n", level);
+    M17_LOG_INFO("Debug level set to %d\n", level);
     
     return 0;
 }
@@ -1414,18 +1415,18 @@ int m17_ax25_bridge_print_status(const m17_ax25_bridge_t* bridge) {
         return -1;
     }
     
-    printf("M17-AX.25 Bridge Status:\n");
-    printf("  M17 Enabled: %s\n", bridge->state.config.m17_enabled ? "Yes" : "No");
-    printf("  AX.25 Enabled: %s\n", bridge->state.config.ax25_enabled ? "Yes" : "No");
-    printf("  FX.25 Enabled: %s\n", bridge->state.config.fx25_enabled ? "Yes" : "No");
-    printf("  IL2P Enabled: %s\n", bridge->state.config.il2p_enabled ? "Yes" : "No");
-    printf("  Auto Detect: %s\n", bridge->state.config.auto_detect ? "Yes" : "No");
-    printf("  Current Protocol: %d\n", bridge->state.current_protocol);
-    printf("  M17 Active: %s\n", bridge->state.m17_active ? "Yes" : "No");
-    printf("  AX.25 Active: %s\n", bridge->state.ax25_active ? "Yes" : "No");
-    printf("  FX.25 Active: %s\n", bridge->state.fx25_active ? "Yes" : "No");
-    printf("  IL2P Active: %s\n", bridge->state.il2p_active ? "Yes" : "No");
-    printf("  Mappings: %d\n", bridge->num_mappings);
+    M17_LOG_INFO("M17-AX.25 Bridge Status:\n");
+    M17_LOG_INFO("  M17 Enabled: %s\n", bridge->state.config.m17_enabled ? "Yes" : "No");
+    M17_LOG_INFO("  AX.25 Enabled: %s\n", bridge->state.config.ax25_enabled ? "Yes" : "No");
+    M17_LOG_INFO("  FX.25 Enabled: %s\n", bridge->state.config.fx25_enabled ? "Yes" : "No");
+    M17_LOG_INFO("  IL2P Enabled: %s\n", bridge->state.config.il2p_enabled ? "Yes" : "No");
+    M17_LOG_INFO("  Auto Detect: %s\n", bridge->state.config.auto_detect ? "Yes" : "No");
+    M17_LOG_INFO("  Current Protocol: %d\n", bridge->state.current_protocol);
+    M17_LOG_INFO("  M17 Active: %s\n", bridge->state.m17_active ? "Yes" : "No");
+    M17_LOG_INFO("  AX.25 Active: %s\n", bridge->state.ax25_active ? "Yes" : "No");
+    M17_LOG_INFO("  FX.25 Active: %s\n", bridge->state.fx25_active ? "Yes" : "No");
+    M17_LOG_INFO("  IL2P Active: %s\n", bridge->state.il2p_active ? "Yes" : "No");
+    M17_LOG_INFO("  Mappings: %d\n", bridge->num_mappings);
     
     return 0;
 }
@@ -1545,7 +1546,7 @@ int m17_ax25_bridge_process_il2p_frame(m17_ax25_bridge_t* bridge, const uint8_t*
     }
     
     // Process as data frame
-    printf("IL2P frame received: %d bytes\n", decoded_length);
+    M17_DEBUG_PRINT(bridge, "IL2P frame received: %d bytes\n", decoded_length);
     
     return 0;
 }

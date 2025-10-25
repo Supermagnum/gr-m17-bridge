@@ -29,7 +29,7 @@ int ax25_init(ax25_tnc_t* tnc) {
     tnc->config.slot_time = 10;         // 100ms
     tnc->config.tx_tail = 5;            // 50ms
     tnc->config.full_duplex = false;
-    tnc->config.max_frame_length = 256;
+    tnc->config.max_frame_length = 255;  // Maximum value for uint8_t
     tnc->config.window_size = 4;
     tnc->config.t1_timeout = 3000;       // 3 seconds
     tnc->config.t2_timeout = 1000;     // 1 second
